@@ -14,7 +14,13 @@ const Module = window.Module
 
 async function image2wasmHeapOffset (blob) {
   console.time('writeToWasmHeap')
-  const imageData = await blob.arrayBuffer()
+  const imageData = await new Promise((resolve) => {
+    const reader = new FileReader()
+    reader.onload = function (event) {
+      resolve(event.target.result)
+    }
+    reader.readAsArrayBuffer(blob)
+  })
   const uint8 = new Uint8Array(imageData)
 
   const numBytes = uint8.length
