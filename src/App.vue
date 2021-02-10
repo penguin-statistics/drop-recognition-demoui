@@ -1,32 +1,43 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
-  </div>
+  <v-app>
+    <v-app-bar
+      app
+      color="secondary"
+      dark
+    >
+      <h1 class="d-flex align-center title mx-2">
+        🐧
+      </h1>
+
+      <h2 class="d-flex align-center"><span class="mr-2">掉落识别</span> <v-chip label class="title font-weight-bold" color="indigo" style="height: 36px">公测</v-chip> </h2>
+
+      <v-spacer></v-spacer>
+
+      <v-chip label small color="orange">
+        <v-icon left small>
+          mdi-alert-circle
+        </v-icon>
+        本测试页面的识别结果不会汇报到企鹅物流
+      </v-chip>
+
+<!--      <v-btn-->
+<!--        href="https://github.com/penguin-statistics"-->
+<!--        target="_blank"-->
+<!--        outlined-->
+<!--        small-->
+<!--      >-->
+<!--        GitHub-->
+<!--      </v-btn>-->
+    </v-app-bar>
+
+    <v-main class="mt-4">
+      <router-view />
+    </v-main>
+  </v-app>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<script>
+export default {
+  name: 'App'
 }
-
-#nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
-  }
-}
-</style>
+</script>

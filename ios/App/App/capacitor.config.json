@@ -1,0 +1,13 @@
+{
+  "appId": "io.penguinstats.droprecogtestui",
+  "appName": "penguin-stats-drop-testui",
+  "bundledWebRuntime": false,
+  "npmClient": "yarn",
+  "webDir": "dist",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "cordova": {}
+}
