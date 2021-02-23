@@ -208,7 +208,7 @@
               prominent
               border="left"
               class="mt-0"
-              :icon="`mdi-numeric-${ filterResults(['Warning','Error']).length }-box-multiple-outline`"
+              :icon="filterResults(['Warning','Error']).length <=10 ?`mdi-numeric-${ filterResults(['Warning','Error']).length }-box-multiple-outline`:'mdi-content-copy'"
             >
               识别结果中存在警报或错误，暂时无法上报这些图片，共计 {{ filterResults(['Warning','Error']).length }} 张
               <br>
