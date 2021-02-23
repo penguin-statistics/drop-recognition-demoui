@@ -1,21 +1,44 @@
 <template>
-  <v-row justify="center" align="center" class="ma-4 mt-0">
+  <v-row
+    justify="center"
+    align="center"
+    class="ma-4 mt-0"
+  >
     <v-col cols="12">
-      <v-dialog :origin="dialogOrigin" max-width="1800px" v-model="expandImage.dialog" scrollable :overlay-opacity=".8" overlay-color="rgba(0, 0, 0, 1)">
-        <v-card style="cursor: zoom-out" @click="expandImage.dialog = false" v-ripple="false">
-          <img :src="expandImage.src" alt="enlarged" />
+      <v-dialog
+        v-model="expandImage.dialog"
+        :origin="dialogOrigin"
+        max-width="1800px"
+        scrollable
+        :overlay-opacity=".8"
+        overlay-color="rgba(0, 0, 0, 1)"
+      >
+        <v-card
+          v-ripple="false"
+          style="cursor: zoom-out"
+          @click="expandImage.dialog = false"
+        >
+          <img
+            :src="expandImage.src"
+            alt="enlarged"
+          >
           <v-card-subtitle class="text-center mt-4">
             右键图片或长按图片可拷贝到剪贴板或保存图片
           </v-card-subtitle>
-<!--          <v-card-actions>-->
-<!--            <v-btn large block text @click="expandImage.dialog = false">-->
-<!--              关闭-->
-<!--            </v-btn>-->
-<!--          </v-card-actions>-->
+          <!--          <v-card-actions>-->
+          <!--            <v-btn large block text @click="expandImage.dialog = false">-->
+          <!--              关闭-->
+          <!--            </v-btn>-->
+          <!--          </v-card-actions>-->
         </v-card>
       </v-dialog>
 
-      <v-alert color="warning" prominent icon="mdi-alert-circle" outlined>
+      <v-alert
+        color="warning"
+        prominent
+        icon="mdi-alert-circle"
+        outlined
+      >
         请留意：本测试页面仅供对新开发完成的结算图识别算法进行测试，识别结果暂不会汇报到企鹅物流
       </v-alert>
 
@@ -27,8 +50,18 @@
         <li><del>需要先进行<strong>初始化</strong>后才可开始识别。</del>现在可以一键识别啦</li>
         <li>在进行算法识别后，检测到<strong>「不合法」的物品将不会计入识别结果</strong>（例如已经过了活动时间的箱子、过了小样掉落时段的理智小样等）</li>
         <li>点击图片可以放大（便于核对），再次点击图片即可关闭</li>
-<!--        <li>请<strong>毫不留情</strong>地测试，包括但不限于塞总和大于 4+ GB 的识别图像（应该没有内存泄露）、各种奇怪的截图、低分辨率和超低画质截图等等</li>-->
-        <li>为了错误汇报规范化、提高解决效率考量，遇到问题、错误、网页"卡死"（进度条不走）等异常情况后，请前往 <v-btn color="primary" href="https://shimo.im/forms/D6CK8dqcxvgrHxxC/fill?channel=web" target="_blank">填写一个十分简短的表单 <v-icon right>mdi-open-in-new</v-icon></v-btn> 以帮助我们解决你所遇到的问题</li>
+        <!--        <li>请<strong>毫不留情</strong>地测试，包括但不限于塞总和大于 4+ GB 的识别图像（应该没有内存泄露）、各种奇怪的截图、低分辨率和超低画质截图等等</li>-->
+        <li>
+          为了错误汇报规范化、提高解决效率考量，遇到问题、错误、网页"卡死"（进度条不走）等异常情况后，请前往 <v-btn
+            color="primary"
+            href="https://shimo.im/forms/D6CK8dqcxvgrHxxC/fill?channel=web"
+            target="_blank"
+          >
+            填写一个十分简短的表单 <v-icon right>
+              mdi-open-in-new
+            </v-icon>
+          </v-btn> 以帮助我们解决你所遇到的问题
+        </li>
         <li>最后，测试愉快 :D</li>
       </ol>
       <h2>
@@ -40,236 +73,287 @@
       <ol>
         <li>从Input 到 Output 的丝滑程度</li>
         <li>输入Input 的 Drag and Drop 功能</li>
+        <li>使用了阿云のwasm v20210222 (我乱加的timestamp)</li>
+        <li>优化了移动端的UI</li>
+        <li>某彩蛋</li>
       </ol>
 
       <!--      <ThreadBlockDetector />-->
 
       <v-divider class="my-4" />
+
       <v-stepper
         v-model="step"
-        vertical
+        alt-labels
       >
-        <v-stepper-step
-          :complete="step > 1"
-          step="1"
-        >
-          输入 Input
-        </v-stepper-step>
-        <v-stepper-content step="1">
-          <v-form class="ml-6">
-            <imageDrop v-model="files" />
-            <v-switch
-              v-model="fastTest"
-              hide-details
-              label="简洁模式：隐藏图片渲染、缩小栏宽度"
-              class="mb-4"
+        <v-stepper-header>
+          <v-stepper-step
+            :complete="step > 1"
+            step="1"
+          >
+            输入 Input
+          </v-stepper-step>
+
+          <v-divider />
+
+          <v-stepper-step
+            :complete="step > 2"
+            step="2"
+          >
+            掉落识别中 Drop Recognizing
+          </v-stepper-step>
+          <v-divider />
+
+          <v-stepper-step
+            :complete="step > 3"
+            step="3"
+          >
+            掉落识别结果与(更正) Drop Recognition Result and (Correction)
+          </v-stepper-step>
+
+          <v-divider />
+
+          <v-stepper-step step="4">
+            (假装)掉落上报 (NotImplementedError) Drop Report
+          </v-stepper-step>
+        </v-stepper-header>
+        <v-stepper-items>
+          <v-stepper-content step="1">
+            <v-form class="ml-6">
+              <imageDrop v-model="files" />
+              <v-switch
+                v-model="fastTest"
+                hide-details
+                label="简洁模式：隐藏图片渲染、缩小栏宽度"
+                class="mb-4"
+              />
+
+              <v-btn
+                color="primary"
+                large
+                :disabled="!files.length"
+                @click="initAndRecognize"
+              >
+                {{ files.length ? "开始识别" : "开始识别 (暂未选定任何图像)" }}
+              </v-btn>
+              <v-expansion-panels
+                class="mt-4"
+                focusable
+              >
+                <v-expansion-panel>
+                  <v-expansion-panel-header>
+                    高级设定 Advanced
+                  </v-expansion-panel-header>
+                  <v-expansion-panel-content>
+                    <v-checkbox
+                      v-model="lots"
+                      hide-details
+                      label="对所有图像全部复制 100 份进行识别测试"
+                    />
+                    <!--        <v-checkbox hide-details v-model="onlyDraw" label="仅绘制图像" />-->
+                    <!--        <v-btn v-if="onlyDraw" @click="draw" color="primary" large>-->
+                    <!--          绘制图像-->
+                    <!--        </v-btn>-->
+                  </v-expansion-panel-content>
+                </v-expansion-panel>
+              </v-expansion-panels>
+            </v-form>
+          </v-stepper-content>
+
+          <v-stepper-content step="2">
+            <p class="text-center">
+              Use Component PreloaderInline
+            </p>
+            <p class="text-center">
+              <code>g桑知道，小声</code>
+            </p>
+            <h3 class="grey--text my-2">
+              进度 PROGRESS
+            </h3>
+            <v-progress-linear
+              v-if="initializing"
+              indeterminate
+              class="quick-transition"
+              stream
+              height="28"
+              striped
+              rounded
+            >
+              初始化中...
+            </v-progress-linear>
+            <v-progress-linear
+              v-else
+              class="quick-transition"
+              :value="(results.length / files.length) * 100"
+              :buffer-value="((results.length + 1) / files.length) * 100"
+              stream
+              height="28"
+              striped
+            >
+              {{ results.length }} / {{ files.length }} ({{ ((results.length / (files.length === 0 ? 1 : files.length)) * 100).toFixed(0) }}%)
+            </v-progress-linear>
+          </v-stepper-content>
+
+          <v-stepper-content step="3">
+            <RecognitionResult
+              server="cn"
+              :success="filterResults(['Success']).length"
+              :warning="filterResults(['Warning']).length"
+              :error="filterResults(['Error']).length"
+              :total="results.length"
             />
+            <v-alert
+              v-if="filterResults(['Success']).length!==results.length"
+              color="warning"
+              prominent
+              border="left"
+              class="mt-0"
+              :icon="`mdi-numeric-${ filterResults(['Warning','Error']).length }-box-multiple-outline`"
+            >
+              识别结果中存在警报或错误，暂时无法上报这些图片，共计 {{ filterResults(['Warning','Error']).length }} 张
+              <br>
+              <v-btn
+                color="primary"
+                href="https://shimo.im/forms/D6CK8dqcxvgrHxxC/fill?channel=web"
+                target="_blank"
+              >
+                填写一个十分简短的表单 <v-icon right>
+                  mdi-open-in-new
+                </v-icon>
+              </v-btn> 以帮助我们解决你所遇到的问题
+            </v-alert>
+            <v-select
+              v-model="filterValue"
+              :items="filterItems"
+              attach
+              chips
+              label="Filter"
+              multiple
+              prepend-icon="mdi-filter-variant"
+            />
+            <div
+              class="ml-6"
+              style="min-height: 100px"
+            >
+              <v-row v-if="results.length">
+                <v-col
+                  v-for="result in filteredResults"
+                  :key="result.file.name"
+                  class="d-flex"
+                  cols="12"
+                  sm="6"
+                  md="4"
+                  lg="3"
+                  :xl="fastTest ? 1 : 2"
+                >
+                  <v-card
+                    outlined
+                    :color="result.result.errors.length ? 'rgba(241,97,87,0.5)' : (result.result.warnings.length ? 'warning' : '')"
+                  >
+                    <v-img
+                      v-if="!fastTest"
+                      v-ripple
+                      :src="result.blobUrl"
+                      contain
+                      style="cursor: zoom-in"
+                      @click="e => enlargeImage(result.blobUrl, e)"
+                    />
+                    <v-card-title class="d-flex flex-row align-center">
+                      <div class="d-flex align-baseline">
+                        <small class="mr-2">关卡</small> <span class="monospace">{{ getStage(result.result.stageId).code }}</span>
+                      </div>
+                      <v-spacer />
+                      <v-chip
+                        label
+                        class="subtitle-2"
+                      >
+                        耗时 {{ result.duration.toFixed(2) }}ms
+                      </v-chip>
+                    </v-card-title>
+                    <v-card-subtitle>
+                      文件名：<span class="font-weight-bold">{{ result.file.name || '(文件名未知)' }}</span>
+                    </v-card-subtitle>
+                    <v-card-text>
+                      <div
+                        v-for="item in result.result.drops"
+                        :key="item.itemId"
+                        class="d-inline-flex align-center justify-center flex-column pa-2 mr-2"
+                        style="border-radius: 4px; border: 1px solid white"
+                      >
+                        <div>
+                          {{ dropTypeToString(item.dropType) }}
+                        </div>
+                        <Item
+                          :item-id="item.itemId"
+                          :count="item.quantity"
+                          :confidence="item.confidence"
+                        />
+                      </div>
+                      <v-alert
+                        v-if="result.result.errors.length || result.result.warnings.length"
+                        outlined
+                        color="white"
+                        border="left"
+                        icon="mdi-alert-circle"
+                      >
+                        识别时有错误发生，无法为您上报该图片
+                        <ul>
+                          <li v-if="result.result.errors.length">
+                            Error: <br><code>{{ result.result.errors }}</code>
+                          </li>
+                          <li v-if="result.result.warnings.length">
+                            Warning: <br><code>{{ result.result.warnings }}</code>
+                          </li>
+                        </ul>
+                      </v-alert>
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+              </v-row>
+              <v-alert
+                v-else
+                color="secondary"
+                prominent
+                border="left"
+                class="mt-0"
+                icon="mdi-numeric-0-box-multiple-outline"
+              >
+                暂时没有识别结果
+              </v-alert>
+            </div>
+
+            <v-btn
+              color="primary mt-4"
+              @click="step = 4"
+            >
+              (假装)确认并上报, 共计 {{ filterResults(['Success']).length }} 张
+              <v-icon
+                right
+                dark
+              >
+                mdi-upload
+              </v-icon>
+            </v-btn>
+          </v-stepper-content>
+
+          <v-stepper-content step="4">
+            <v-card
+              class="mb-12 text-center"
+              height="200px"
+            >
+              恭喜你上报成功（假装）
+              <br>
+              <code>{{ filterResults(['Success']) }}</code>
+            </v-card>
 
             <v-btn
               color="primary"
-              large
-              :disabled="!files.length"
-              @click="initAndRecognize"
+              @click="step = 1"
             >
-              {{ files.length ? "开始识别" : "开始识别 (暂未选定任何图像)" }}
+              回到第一步
             </v-btn>
-            <v-expansion-panels
-              class="mt-4"
-              focusable
-            >
-              <v-expansion-panel>
-                <v-expansion-panel-header>
-                  高级设定 Advanced
-                </v-expansion-panel-header>
-                <v-expansion-panel-content>
-                  <v-checkbox
-                    v-model="lots"
-                    hide-details
-                    label="对所有图像全部复制 100 份进行识别测试"
-                  />
-              <!--        <v-checkbox hide-details v-model="onlyDraw" label="仅绘制图像" />-->
-              <!--        <v-btn v-if="onlyDraw" @click="draw" color="primary" large>-->
-              <!--          绘制图像-->
-              <!--        </v-btn>-->
-                </v-expansion-panel-content>
-              </v-expansion-panel>
-            </v-expansion-panels>
-          </v-form>
-        </v-stepper-content>
-        <v-stepper-step
-          :complete="step > 2"
-          step="2"
-        >
-          掉落识别中 Drop Recognizing
-        </v-stepper-step>
-
-        <v-stepper-content step="2">
-          <p class="text-center">Use Component PreloaderInline</p>
-          <p class="text-center"><code>g桑知道，小声</code></p>
-          <h3 class="grey--text my-2">
-            进度 PROGRESS
-          </h3>
-          <v-progress-linear
-            v-if="initializing"
-            indeterminate
-            class="quick-transition"
-            stream
-            height="28"
-            striped
-          >
-            初始化中...
-          </v-progress-linear>
-          <v-progress-linear
-            v-else
-            class="quick-transition"
-            :value="(results.length / files.length) * 100"
-            :buffer-value="((results.length + 1) / files.length) * 100"
-            stream
-            height="28"
-            striped
-          >
-            {{ results.length }} / {{ files.length }} ({{ ((results.length / (files.length === 0 ? 1 : files.length)) * 100).toFixed(0) }}%)
-          </v-progress-linear>
-        </v-stepper-content>
-
-        <v-stepper-step
-         :complete="step > 3"
-         step="3"
-        >
-          掉落识别结果与(更正) Drop Recognition Result and (Correction)
-        </v-stepper-step>
-
-        <v-stepper-content step="3">
-        <v-select
-            v-model="filterValue"
-            :items="filterItems"
-            attach
-            chips
-            label="Filter"
-            multiple
-          ></v-select>
-
-          <div class="ml-6">
-          <v-row v-if="results.length">
-            <v-col
-              v-for="result in filteredResults"
-              :key="result.file.name"
-              class="d-flex"
-              cols="12"
-              sm="6"
-              md="4"
-              lg="3"
-              :xl="fastTest ? 1 : 2"
-            >
-              <v-card
-                outlined
-                :color="result.result.errors.length ? 'rgba(241,97,87,0.5)' : (result.result.warnings.length ? 'warning' : '')"
-              >
-                <v-img
-                  v-if="!fastTest"
-                  v-ripple
-                  :src="result.blobUrl"
-                  contain
-                  style="cursor: zoom-in"
-                  @click="e => enlargeImage(result.blobUrl, e)"
-                />
-                <v-card-title class="d-flex flex-row align-center">
-                  <div class="d-flex align-baseline">
-                    <small class="mr-2">关卡</small> <span class="monospace">{{ getStage(result.result.stageId).code }}</span>
-                  </div>
-                  <v-spacer />
-                  <v-chip
-                    label
-                    class="subtitle-2"
-                  >
-                    耗时 {{ result.duration.toFixed(2) }}ms
-                  </v-chip>
-                </v-card-title>
-                <v-card-subtitle>
-                  文件名：<span class="font-weight-bold">{{ result.file.name || '(文件名未知)' }}</span>
-                </v-card-subtitle>
-                <v-card-text>
-                  <div
-                    v-for="item in result.result.drops"
-                    :key="item.itemId"
-                    class="d-inline-flex align-center justify-center flex-column pa-2 mr-2"
-                    style="border-radius: 4px; border: 1px solid white"
-                  >
-                    <div>
-                      {{ dropTypeToString(item.dropType) }}
-                    </div>
-                    <Item
-                      :item-id="item.itemId"
-                      :count="item.quantity"
-                      :confidence="item.confidence"
-                    />
-                  </div>
-                  <v-alert
-                    v-if="result.result.errors.length || result.result.warnings.length"
-                    outlined
-                    color="white"
-                    border="left"
-                    icon="mdi-alert-circle"
-                  >
-                    识别时有错误发生
-                    <ul>
-                      <li v-if="result.result.errors.length">
-                        Error: <br><code>{{ result.result.errors }}</code>
-                      </li>
-                      <li v-if="result.result.warnings.length">
-                        Warning: <br><code>{{ result.result.warnings }}</code>
-                      </li>
-                    </ul>
-                  </v-alert>
-                </v-card-text>
-              </v-card>
-            </v-col>
-          </v-row>
-          <v-alert
-            v-else
-            color="secondary"
-            prominent
-            border="left"
-            class="mt-0"
-            icon="mdi-numeric-0-box-multiple-outline"
-          >
-            暂时没有识别结果
-          </v-alert>
-        </div>
-
-          <v-btn
-            color="primary mt-4"
-            @click="step = 4"
-          >
-            (假装)确认并上报
-            <v-icon
-              right
-              dark
-            >
-              mdi-upload
-            </v-icon>
-          </v-btn>
-        </v-stepper-content>
-        <v-stepper-step step="4">
-          (假装)掉落上报 (NotImplementedError) Drop Report
-        </v-stepper-step>
-
-        <v-stepper-content step="4">
-          <v-card
-            class="mb-12 text-center"
-            height="200px"
-          >
-            恭喜你上报成功（假装）
-          </v-card>
-
-          <v-btn
-            color="primary"
-            @click="step = 1"
-          >
-            回到第一步
-          </v-btn>
-
-        </v-stepper-content>
+          </v-stepper-content>
+        </v-stepper-items>
       </v-stepper>
 
       <v-divider class="my-4" />
@@ -283,7 +367,6 @@
             调试信息 DEBUG (可能被弃用了唔)
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-
             <h5 class="grey--text mb-4">
               Console
             </h5>
@@ -348,10 +431,11 @@ import Recognizer from '@/utils/recognizer'
 import Item from '@/components/Item'
 import pdata from '@/models/pdata'
 import ImageDrop from '@/components/ImageDrop'
+import RecognitionResult from '@/components/RecognitionResult'
 
 export default {
   name: 'Home',
-  components: { Item, ImageDrop },
+  components: { Item, ImageDrop, RecognitionResult },
   data () {
     return {
       recognizer: null,
@@ -385,34 +469,7 @@ export default {
   },
   computed: {
     filteredResults () {
-      var result = this.results.filter((result) => {
-        for (var key of this.filterValue) {
-          console.log(key)
-          switch (key) {
-            case 'Success':
-              if (!(result.result.warnings.length || result.result.errors.length)) {
-                return true
-              }
-              break
-            case 'Warning':
-              if (result.result.warnings.length) {
-                return true
-              }
-              break
-            case 'Error':
-              if (result.result.errors.length) {
-                return true
-              }
-              break
-            default:
-              return false
-          }
-        }
-        return false
-      })
-      console.log('filtered')
-      console.log(result)
-      return result
+      return this.filterResults(this.filterValue)
     }
   },
   mounted () {
@@ -537,13 +594,39 @@ export default {
       await this.recognize()
       console.log(this.results)
       this.step = 3
+    },
+    filterResults (filter) {
+      return this.results.filter((result) => {
+        for (var key of filter) {
+          switch (key) {
+            case 'Success':
+              if (!(result.result.warnings.length || result.result.errors.length)) {
+                return true
+              }
+              break
+            case 'Warning':
+              if (result.result.warnings.length) {
+                return true
+              }
+              break
+            case 'Error':
+              if (result.result.errors.length) {
+                return true
+              }
+              break
+            default:
+              return false
+          }
+        }
+        return false
+      })
     }
   }
 }
 </script>
 
 <style>
-.cursor-pointer .v-file-input__text {
+.cursor-pointer .v-file-input__text, .v-overlay__scrim {
   cursor: pointer !important;
 }
 #canvases > * {
