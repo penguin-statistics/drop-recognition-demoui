@@ -1,37 +1,47 @@
 <template>
   <div class="d-flex flex-column justify-center text-center">
-    <v-badge bordered bottom right overlap color="secondary" offset-x="16" offset-y="16">
-      <template #badge>
-        <span class="monospace-pure">{{count.toString()}}</span>
-      </template>
-      <div>
-        <figure
-          v-if="item.itemId !== 'furni' && item.spriteCoord"
-          class="item-icon--sprite"
-          :alt="item.name"
-          :style="style"
-        />
-        <v-icon
-          v-else-if="item.itemId === 'furni'"
-          :class="furniturePadding"
-          class="deep-orange item-icon--special white--text"
-          :size="24 * ratio"
-        >
-          mdi-lamp
-        </v-icon>
-        <v-icon
-          v-else-if="item.itemId !== 'furni' && !item.spriteCoord"
-          :class="furniturePadding"
-          class="blue item-icon--special white--text"
-          :size="24 * ratio"
-        >
-          mdi-treasure-chest
-        </v-icon>
-      </div>
-    </v-badge>
+    <div class="m-auto">
+      <v-badge
+        bordered
+        bottom
+        right
+        overlap
+        color="secondary"
+        offset-x="16"
+        offset-y="16"
+      >
+        <template v-slot:badge>
+          <span class="monospace-pure">{{ count.toString() }}</span>
+        </template>
+        <div>
+          <figure
+            v-if="item.itemId !== 'furni' && item.spriteCoord"
+            class="item-icon--sprite"
+            :alt="item.name"
+            :style="style"
+          />
+          <v-icon
+            v-else-if="item.itemId === 'furni'"
+            :class="furniturePadding"
+            class="deep-orange item-icon--special white--text"
+            :size="24 * ratio"
+          >
+            mdi-lamp
+          </v-icon>
+          <v-icon
+            v-else-if="item.itemId !== 'furni' && !item.spriteCoord"
+            :class="furniturePadding"
+            class="blue item-icon--special white--text"
+            :size="24 * ratio"
+          >
+            mdi-treasure-chest
+          </v-icon>
+        </div>
+      </v-badge>
+    </div>
     <div class="caption">
-      <span>{{item.name}}</span>&nbsp;
-      <span class="monospace-pure">{{item.itemId}}</span>
+      <span>{{ item.name }}</span>&nbsp;
+      <span class="monospace-pure">{{ item.itemId }}</span>
       <br>
       <span>置信</span>&nbsp;
       <span class="monospace-pure">{{ (confidence * 100).toFixed(3) }}%</span>
