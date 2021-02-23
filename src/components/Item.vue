@@ -39,13 +39,16 @@
         </div>
       </v-badge>
     </div>
+    <!--
     <div class="caption">
-      <span>{{ item.name }}</span>&nbsp;
+      <span>{{ item.name }}</span>
+      &nbsp;
       <span class="monospace-pure">{{ item.itemId }}</span>
       <br>
       <span>置信</span>&nbsp;
       <span class="monospace-pure">{{ (confidence * 100).toFixed(3) }}%</span>
     </div>
+    -->
   </div>
 </template>
 
