@@ -16,19 +16,20 @@
       </v-dialog>
 
       <v-alert color="warning" prominent icon="mdi-alert-circle" outlined>
-        请留意：本测试页面仅供对新开发完成的结算图识别算法进行测试，识别结果暂不会汇报到企鹅物流
+        请留意：本测试页面仅供对适配完成新结算 UI 的结算图识别算法进行测试；识别结果暂不会汇报到企鹅物流
       </v-alert>
 
-      <h2>
+      <h2 class="header">
         食用指南
       </h2>
       <ol>
+        <li>本版本的截图识别已适配于 2022 年 4 月 更新的新结算页面 UI</li>
         <li>图像文件仅会通过使用本地 WASM 技术进行识别，<strong>不会</strong>向服务器上传</li>
         <li>需要先进行<strong>初始化</strong>后才可开始识别</li>
         <li>在进行算法识别后，检测到<strong>「不合法」的物品将不会计入识别结果</strong>（例如已经过了活动时间的箱子、过了小样掉落时段的理智小样等）</li>
         <li>点击图片可以放大（便于核对），再次点击图片即可关闭</li>
 <!--        <li>请<strong>毫不留情</strong>地测试，包括但不限于塞总和大于 4+ GB 的识别图像（应该没有内存泄露）、各种奇怪的截图、低分辨率和超低画质截图等等</li>-->
-        <li>为了错误汇报规范化、提高解决效率考量，遇到问题、错误、网页"卡死"（进度条不走）等异常情况后，请前往 <v-btn color="primary" href="https://shimo.im/forms/D6CK8dqcxvgrHxxC/fill?channel=web" target="_blank">填写一个十分简短的表单 <v-icon right>mdi-open-in-new</v-icon></v-btn> 以帮助我们解决你所遇到的问题</li>
+        <!-- <li>为了错误汇报规范化、提高解决效率考量，遇到问题、错误、网页"卡死"（进度条不走）等异常情况后，请前往 <v-btn color="primary" href="https://shimo.im/forms/D6CK8dqcxvgrHxxC/fill?channel=web" target="_blank">填写一个十分简短的表单 <v-icon right>mdi-open-in-new</v-icon></v-btn> 以帮助我们解决你所遇到的问题</li> -->
         <li>最后，测试愉快 :D</li>
       </ol>
 
@@ -42,7 +43,7 @@
                       hint="仅支持使用小于 50MB 大小的图片 (image/*)" counter show-size
                       accept="image/*" small-chips :rules="rules"
         />
-        <v-checkbox hide-details v-model="lots" label="对所有图像全部复制 100 份进行识别测试" />
+        <v-checkbox hide-details v-model="lots" label="对所有图像全部复制 100 份进行识别测试 (压测)" />
         <v-checkbox hide-details v-model="fastTest" label="快速测试模式：隐藏图片渲染、缩小栏宽度" class="mb-4" />
 <!--        <v-checkbox hide-details v-model="onlyDraw" label="仅绘制图像" />-->
 
@@ -58,7 +59,7 @@
 <!--        </v-btn>-->
       </v-form>
 
-      <v-expansion-panels class="mt-4" focusable>
+      <v-expansion-panels class="mt-4 pl-5">
         <v-expansion-panel>
           <v-expansion-panel-header>
             调试信息 DEBUG
@@ -116,11 +117,11 @@
       <div class="ml-6">
         <v-row v-if="results.length">
           <v-col class="d-flex" cols="12" sm="6" md="4" lg="3" :xl="fastTest ? 1 : 2" v-for="result in results" :key="result.file.name">
-            <v-card outlined :color="result.result.errors.length ? 'rgba(241,97,87,0.5)' : (result.result.warnings.length ? 'warning' : '')">
+            <v-card outlined :color="result.result.exceptions.length ? 'rgba(241,97,87,0.5)' : ''">
               <v-img v-if="!fastTest" v-ripple :src="result.blobUrl" contain @click="e => enlargeImage(result.blobUrl, e)" style="cursor: zoom-in"></v-img>
               <v-card-title class="d-flex flex-row align-center">
                 <div class="d-flex align-baseline">
-                  <small class="mr-2">关卡</small> <span class="monospace">{{ getStage(result.result.stageId).code }}</span>
+                  <small class="mr-2">关卡</small> <span class="monospace">{{ getStage(result.result.stage.stageId).code }}</span>
                 </div>
                 <v-spacer />
                 <v-chip label class="subtitle-2">
@@ -131,20 +132,17 @@
                 文件名：<span class="font-weight-bold">{{result.file.name || '(文件名未知)'}}</span>
               </v-card-subtitle>
               <v-card-text>
-                <div class="d-inline-flex align-center justify-center flex-column pa-2 mr-2" style="border-radius: 4px; border: 1px solid white" v-for="item in result.result.drops" :key="item.itemId">
+                <div class="d-inline-flex align-center justify-center flex-column pa-2 mr-2" style="border-radius: 4px; border: 1px solid white" v-for="item in result.result.dropArea.drops" :key="item.itemId">
                   <div>
                     {{ dropTypeToString(item.dropType) }}
                   </div>
                   <Item :itemId="item.itemId" :count="item.quantity" :confidence="item.confidence"/>
                 </div>
-                <v-alert outlined color="white" border="left" v-if="result.result.errors.length || result.result.warnings.length" icon="mdi-alert-circle">
+                <v-alert outlined color="white" border="left" v-if="result.result.exceptions.length" icon="mdi-alert-circle">
                   识别时有错误发生
                   <ul>
-                    <li v-if="result.result.errors.length">
-                      Error: <br><code>{{result.result.errors}}</code>
-                    </li>
-                    <li v-if="result.result.warnings.length">
-                      Warning: <br><code>{{result.result.warnings}}</code>
+                    <li v-if="result.result.exceptions.length">
+                      Error: <br><code>{{result.result.exceptions}}</code>
                     </li>
                   </ul>
                 </v-alert>
@@ -213,6 +211,7 @@ export default {
       this.initializing = true
 
       this.recognizer = new Recognizer()
+      window.recognizer = this.recognizer
 
       this.recognizer.initialize()
         .then(() => {
@@ -248,9 +247,9 @@ export default {
       }
 
       await this.recognizer.recognize(this.files, (result) => {
-        result.result.drops.map(el => {
-          el.confidence = parseFloat(el.confidence)
-          el.quantity = parseFloat(el.quantity)
+        result.result.dropArea.drops.map(el => {
+          el.confidence = parseFloat(el.confidence[el.itemId])
+          el.quantity = parseFloat(el.quantity.quantity)
         }).sort((a, b) => {
           return -typeOrder.indexOf(a.dropType) - (-typeOrder.indexOf(b.dropType))
         })
@@ -350,5 +349,11 @@ export default {
 }
 .quick-transition {
   transition-duration: 20ms !important;
+}
+h2.header {
+  margin-bottom: .25rem;
+}
+ol > li {
+  margin-bottom: .1rem;
 }
 </style>

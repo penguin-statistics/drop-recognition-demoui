@@ -9,11 +9,11 @@
         🐧
       </h1>
 
-      <h2 class="d-flex align-center"><span class="mr-2">掉落识别</span> <v-chip label class="title font-weight-bold" color="indigo" style="height: 36px">公测</v-chip> </h2>
+      <h2 class="d-flex align-center"><span class="mr-2">截图识别</span> <v-chip label class="title font-weight-bold" color="deep-orange" style="height: 36px">v4 内测</v-chip> </h2>
 
       <v-spacer></v-spacer>
 
-      <v-chip label small color="orange">
+      <v-chip class="hidden-sm-and-down" label small color="orange">
         <v-icon left small>
           mdi-alert-circle
         </v-icon>
