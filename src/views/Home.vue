@@ -3,9 +3,9 @@
     <v-col cols="12">
       <v-dialog :origin="dialogOrigin" max-width="1800px" v-model="expandImage.dialog" scrollable :overlay-opacity=".8" overlay-color="rgba(0, 0, 0, 1)">
         <v-card style="cursor: zoom-out" @click="expandImage.dialog = false" v-ripple="false">
-          <img :src="expandImage.src" alt="enlarged" />
+          <img :src="expandImage.src" alt="DebugImage" />
           <v-card-subtitle class="text-center mt-4">
-            右键图片或长按图片可拷贝到剪贴板或保存图片
+            右键图片或长按图片可拷贝到剪贴板或保存图片；本图为 Debug Image，并非原图
           </v-card-subtitle>
 <!--          <v-card-actions>-->
 <!--            <v-btn large block text @click="expandImage.dialog = false">-->
@@ -227,7 +227,7 @@ export default {
         this.drawImageToPreview(file)
       }
     },
-    stringify(s) {
+    stringify (s) {
       return JSON.stringify(s, null, 4)
     },
     async recognize () {
@@ -301,10 +301,13 @@ export default {
       return map[type] || type
     },
     enlargeImage (url, event) {
-      console.log(event)
       this.dialogOrigin = `${event.clientX}px ${event.clientY}px`
       this.$nextTick(() => {
         this.expandImage.dialog = true
+        // this.recognizer.generateDebugImage(url)
+        //   .then(image => {
+        //     this.expandImage.src = image
+        //   })
         this.expandImage.src = url
       })
     },

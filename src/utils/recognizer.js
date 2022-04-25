@@ -36,7 +36,7 @@ async function image2wasmHeapOffset (blob) {
   }
 }
 
-async function file2ArrayBuffer(file) {
+async function file2ArrayBuffer (file) {
   const reader = new FileReader()
   return new Promise((resolve) => {
     reader.onload = function (event) {
@@ -140,6 +140,19 @@ class Recognizer {
       console.timeEnd(file.name)
       console.groupEnd()
     }
+  }
+
+  async generateDebugImage (url) {
+    const file = await fetch(url).then((response) => response.arrayBuffer())
+    const recognizer = new Module.Recognizer('RESULT')
+    const result = recognizer.recognize(file, true, false)
+    console.log('result', result)
+    const image = recognizer.get_debug_img()
+    console.log('image', image)
+    // image is a Uint8Array of the encoded png image data
+    const blob = new Blob([image], { type: 'image/png' })
+    console.log(blob)
+    return URL.createObjectURL(blob)
   }
 }
 
