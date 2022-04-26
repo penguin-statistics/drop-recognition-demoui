@@ -2,6 +2,7 @@ import preloads from '@/models/preloads'
 // import Jimp from 'jimp'
 import JSZip from 'jszip'
 const Module = window.Module
+import wasmWorker from "wasm-worker";
 
 // function addCanvas (canvas, url, small = false) {
 //   // canvas.style.height = small ? '80px' : '264px'
@@ -12,29 +13,29 @@ const Module = window.Module
 //   if (s) s.prepend(canvas)
 // }
 
-async function image2wasmHeapOffset (blob) {
-  console.time('writeToWasmHeap')
-  const imageData = await new Promise((resolve) => {
-    const reader = new FileReader()
-    reader.onload = function (event) {
-      resolve(event.target.result)
-    }
-    reader.readAsArrayBuffer(blob)
-  })
-  const uint8 = new Uint8Array(imageData)
+// async function image2wasmHeapOffset (blob) {
+//   console.time('writeToWasmHeap')
+//   const imageData = await new Promise((resolve) => {
+//     const reader = new FileReader()
+//     reader.onload = function (event) {
+//       resolve(event.target.result)
+//     }
+//     reader.readAsArrayBuffer(blob)
+//   })
+//   const uint8 = new Uint8Array(imageData)
 
-  const numBytes = uint8.length
-  const dataPtr = Module._malloc(numBytes)
-  const dataOnHeap = new Uint8Array(Module.HEAPU8.buffer, dataPtr, numBytes)
-  dataOnHeap.set(uint8)
-  console.timeEnd('writeToWasmHeap')
+//   const numBytes = uint8.length
+//   const dataPtr = Module._malloc(numBytes)
+//   const dataOnHeap = new Uint8Array(Module.HEAPU8.buffer, dataPtr, numBytes)
+//   dataOnHeap.set(uint8)
+//   console.timeEnd('writeToWasmHeap')
 
-  return {
-    offset: dataOnHeap.byteOffset,
-    length: numBytes,
-    blobUrl: URL.createObjectURL(blob)
-  }
-}
+//   return {
+//     offset: dataOnHeap.byteOffset,
+//     length: numBytes,
+//     blobUrl: URL.createObjectURL(blob)
+//   }
+// }
 
 async function file2ArrayBuffer (file) {
   const reader = new FileReader()

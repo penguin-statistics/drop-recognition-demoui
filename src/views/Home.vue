@@ -304,11 +304,11 @@ export default {
       this.dialogOrigin = `${event.clientX}px ${event.clientY}px`
       this.$nextTick(() => {
         this.expandImage.dialog = true
-        // this.recognizer.generateDebugImage(url)
-        //   .then(image => {
-        //     this.expandImage.src = image
-        //   })
-        this.expandImage.src = url
+        this.recognizer.generateDebugImage(url)
+          .then(image => {
+            this.expandImage.src = image
+          })
+        // this.expandImage.src = url
       })
     },
     getStage (stageId) {
